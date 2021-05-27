@@ -18,30 +18,36 @@ body{
     flex-wrap: wrap;
     padding: 5px;
     transition: all .5s linear;
+    cursor: pointer;
 }
 .containCell
 {
     padding: 1px;
     box-sizing: border-box;
+    cursor: pointer;
 }
 .Cell{
     height: 100%;
     width: 100%;
-    background: rgb(214, 238, 255);
-    opacity: 0.05;
+    background: rgb(4, 5, 19);
     border-radius: 2px;
     transition: all 0.2s linear;
-    cursor: pointer;
+    display: flex;
+}
+.open
+{
+    background: white;
+}
+.close{
+    background: greenyellow;
 }
 .Cell:hover{
-    opacity: 0.2; 
+    background: rgb(26, 27, 34);
 }
 .light{
-    opacity: 0.9;
-    background: rgb(224, 224, 224);
+    background: rgb(219, 219, 219); 
 }
 .light:hover{
-    opacity: 1; 
     background: white;
     box-shadow: 0 0 10px white;
 }
@@ -84,4 +90,9 @@ body{
 .menu .btn:hover
 {
     background: rgb(250, 0, 0);
+}
+.nd{
+    margin: auto;
+    color: rgb(255, 255, 255);
+    text-align: center;
 }

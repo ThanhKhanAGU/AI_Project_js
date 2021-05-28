@@ -160,115 +160,145 @@ function setText(str)
     
 }
 f_resize()
-create_map(10)
-function show()
-{
-    if(from==false&&to==false)
-    for(let y=0;y<Size;y++)
-    for(let x=0;x<Size;x++)
-    {
-        map[x][y] = tinh(x,y)
-        document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+map[x][y]+"</p>"
-    }
-}
-function tinh(x,y)
+setText("3,,,,,,,,,,,,,,1,,1,,1,1,1,1,1,1,1,1,,1,,,,1,,,,,,,,,,,1,,1,,1,,1,1,1,,1,,,,1,1,,,,1,,1,,1,,,,1,,1,,1,,,1,,1,,1,1,1,,1,,1,,,,,1,,1,,,,,,1,,1,1,1,,,,,,,1,,1,1,1,,1,,,,,,,1,1,1,,1,,,,1,,1,1,,1,,1,,,,,,1,,1,,1,,,1,,1,,,1,1,1,1,,,,1,,,1,,1,,,,,,,,,,,,,1,,,,1,1,1,,1,1,1,,1,1,,1,1,1,1,,,1,,1,,,,1,,,,,,,,,,,1,,1,,,2,")
+function GetMap(x,y)
 {
     a = x-cell_from[0]
     b = y-cell_from[1]
     hx = Math.sqrt(a*a+b*b)
     gx = parseFloat(a+b)
-    return parseFloat(gx+hx).toFixed(1)
+    if(!document.getElementById("_"+x+"_"+y).classList.contains("light"))
+        return parseFloat(gx+hx)
+    else
+        return null
 }
-function haaa(x,y)
+function getHx(x,y)
 {
     a = x-cell_from[0]
     b = y-cell_from[1]
     return Math.sqrt(a*a+b*b)
 }
-function gaaa(x,y)
+function getGx(x,y)
 {
     a = x-cell_from[0]
     b = y-cell_from[1]
     return parseFloat(a+b)
 }
-setText(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
-var open = new Array()
-var close = new Array()
-var step=0
-var tmp=1
-function Min()
+function show(type=1)
 {
-    min = [open[0][0],open[0][1]]
-    t =0
-    for(i=0;i<open.length;i++)
+    if(from==false&&to==false)
+    for(let y=0;y<Size;y++)
+    for(let x=0;x<Size;x++)
     {
-        
-        if(y<x)
-        {
-            min = [open[i][0],open[i][1]]
-            t = i
-        }
-        if(y==x)
-        {
-
-        }
+        if(type==1)map[x][y] = (getHx(x,y)+getGx(x,y)).toFixed(1)
+        if(type==2)map[x][y] = getHx(x,y)
+        if(type==3)map[x][y] = getGx(x,y)
+        document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+map[x][y]+"</p>"
     }
-    open.splice(t,1)
-    return min
 }
-function cell(x,y)
+var open = new Array()//mảng toàn cục chức phần tử open
+var close = new Array() //mảng toàn cục chứa các phần close 
+function print(m)
 {
-    k = document.getElementById("_"+x+"_"+y)
-    return !k.classList.contains("light")
+    return "P("+m[0]+","+m[1]+")"
 }
-function print(open)
+function printArray()
 {
-    s=""
-    for(i=0;i<open.length;i++)
-    {
-        s+="P("+open[i]+")- "+map[open[i][0]][open[i][1]]+", "
-    }
-    console.log(s)
-}
-function color(open,close)
+    s="open: "
+    open.forEach(item=>{
+        s+= print(item)+", "
+    })
+    s+="\nclose: "
+    close.forEach(item=>{
+        s+= print(item)+", "
+    })
+    return s
+} 
+function isexist(m)
 {
-    for(i=0;i<open.length;i++)
-    {
-         k = document.getElementById("_"+open[i][0]+"_"+open[i][1])
-         k.classList.add("open")
-    }
     for(i=0;i<close.length;i++)
     {
-        k = document.getElementById("_"+close[i][0]+"_"+close[i][1])
-        k.classList.add("close")
+        if(close[i][0]==m[0]&&close[i][1]==m[1])
+        {
+            return true
+        }
     }
+    return false
 }
 function addopen(m)
 {
-    x = parseInt(m[0])
-    y = parseInt(m[1])
-    if(x-1>=0)open.push([x-1,m[1]])
-    if(y-1>=0)open.push([m[0],y-1])
-    if((x+1)<Size)open.push([x+1,m[1]])
-    if((y+1)<Size)open.push([m[0],y+1])
-}
-function run(tep)
-{
-    open = new Array();
-    close = new Array();
-    open.push([cell_from[0],cell_from[1]])
-    for(let i = 0;i<tep;i++)
+    close.push([m[0],m[1]])
+    if(m[0]+1<Size&&GetMap(m[0]+1,m[1])!=null)
     {
-        m = Min()
-        if(m[0]==cell_to[0]&&m[1]==cell_to[1])
+        if(!isexist([m[0]+1,m[1]]))
         {
-            alert("Tìm Thấy");
+            open.push([m[0]+1,m[1]])
         }
-        addopen(m)
-        close.push(m)
-        color(open,close)
+    }
+    if(m[1]+1<Size&&GetMap(m[0],m[1]+1)!=null)
+    {
+        if(!isexist([m[0],m[1]+1]))
+        {
+            open.push([m[0],m[1]+1])
+        }
+    }
+    if(m[0]-1>=0&&GetMap(m[0]-1,m[1])!=null)
+    {
+        if(!isexist([m[0]-1,m[1]]))
+        {
+            open.push([m[0]-1,m[1]])
+        }
+    }
+    if(m[1]-1>=0&&GetMap(m[0],m[1]-1)!=null)
+    {
+        if(!isexist([m[0],m[1]-1]))
+        {
+            open.push([m[0],m[1]-1])
+        }
+    }
+    vt = 0;
+    for(i=0;i<open.length;i++)
+    {
+        if(open[i][0]==m[0]&&open[i][1]==m[1])
+        {
+            vt = i;
+            break;
+        }
+    }
+    open.splice(vt,1);
+   
+}
+function color()
+{
+    close.forEach(i=>{
+        document.getElementById("_"+i[0]+"_"+i[1]).classList.add("close")
+    })
+    open.forEach(i=>{
+        document.getElementById("_"+i[0]+"_"+i[1]).classList.add("open")
+    })
+}
+function getMinOpen()
+{
+    min = [open[0][0],open[0][1]]
+    for(i=1;i<open.length;i++)
+    {
+        if(GetMap(min[0],min[1])>GetMap(open[i][0],open[i][1]))
+        {
+            min = [open[i][0],open[i][1]]
+        }
+    }
+    return min
+}
+function run(tem)
+{
+    open = new Array()
+    close = new Array()
+    open.push([cell_from[0],cell_from[1]])
+    for(item = 0;item<tem;item++)
+    {
+       min = getMinOpen()
+       console.log(min)
+       addopen(min)
+       color()
     }
 }
-
-
-

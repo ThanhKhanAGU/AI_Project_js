@@ -191,8 +191,8 @@ function show(type=1)
     for(let x=0;x<Size;x++)
     {
         if(type==1)map[x][y] = (getHx(x,y)+getGx(x,y)).toFixed(1)
-        if(type==2)map[x][y] = getHx(x,y)
-        if(type==3)map[x][y] = getGx(x,y)
+        if(type==2)map[x][y] = getHx(x,y).toFixed(1)
+        if(type==3)map[x][y] = getGx(x,y).toFixed(1)
         document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+map[x][y]+"</p>"
     }
 }

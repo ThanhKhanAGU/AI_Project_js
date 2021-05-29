@@ -17,8 +17,13 @@ body{
     display: flex;
     flex-wrap: wrap;
     padding: 5px;
-    transition: all .5s linear;
     cursor: pointer;
+    position: relative;
+}
+#draw{
+    position: absolute;
+    background: none;
+    pointer-events: none
 }
 .containCell
 {
@@ -30,22 +35,30 @@ body{
     height: 100%;
     width: 100%;
     background: rgb(4, 5, 19);
-    border-radius: 2px;
+    border-radius: 10%;
     transition: all 0.2s linear;
     display: flex;
+    z-index: 5;
+}
+.src
+{
+    background: rgb(255, 0, 234);
+    color:black;
 }
 .open
 {
-    background: white;
+    background: rgb(42, 42, 42);
+    color:black;
 }
 .close{
-    background: greenyellow;
+    background: rgb(39, 65, 0);
+    color: purple;
 }
 .Cell:hover{
     background: rgb(26, 27, 34);
 }
 .light{
-    background: rgb(219, 219, 219); 
+    background: rgb(236, 234, 234); 
 }
 .light:hover{
     background: white;
@@ -62,12 +75,12 @@ body{
 }
 .to{
     opacity: 0.9;
-    background: rgb(4, 110, 0);
+    background: rgb(7, 199, 0);
 }
 .to:hover{
     opacity: 1; 
     background: rgb(0, 255, 0);
-    box-shadow: 0 0 10px green;
+    box-shadow: 0 0 10px rgb(0, 81, 128);
 }
 
 .menu

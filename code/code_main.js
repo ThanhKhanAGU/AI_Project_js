@@ -4,7 +4,7 @@ var select = 1000
 var left=0
 var from = true;
 var to = true;
-
+var draw;
 document.addEventListener('contextmenu', event => event.preventDefault())
 document.addEventListener("mousedown",(e)=>
 {
@@ -18,10 +18,64 @@ document.addEventListener("mouseup",(e)=>
 function f_resize()
 {
     container.style.width = container.offsetHeight+"px";
+    draw.style.width = (container.offsetHeight-10)+"px"
+    draw.style.height = (container.offsetHeight-10)+"px"
 }
 // biến quản lý so luong Ô
 var Size = 20 // mặc định là 20px
 var map = new Array()
+class Node
+{
+    constructor(element)
+    {
+        this.back
+        this.e = element
+    } 
+    isblock()
+    {
+        if(this.e.classList.contains("light"))
+            return true;
+        else
+            return false;
+    }
+    isStatus()
+    {
+        if(this.e.classList.contains("from"))
+        {
+            return "from"
+        }else
+        if(this.e.classList.contains("to"))
+        {
+            return "to"
+        }
+        else
+            return "";
+    }
+    get_g()
+    {
+        let tmp = this.e.id.split("_")
+        let x = parseInt(tmp[1])
+        let y = parseInt(tmp[2])
+        let a = x-cell_from[0]
+        let b = y-cell_from[1]
+        return Math.sqrt(a*a+b*b)
+    }
+    get_h()
+    {
+        let tmp = this.e.id.split("_")
+        let x = parseInt(tmp[1])
+        let y = parseInt(tmp[2])
+        let a = x-cell_to[0]
+        let b = y-cell_to[1]
+        return Math.sqrt(a*a+b*b)
+    }
+    get_f()
+    {
+        return this.get_h()+this.get_g()
+    }
+}
+var node_from
+var node_to
 function create_map(size) //hàm tạo map
 {
     Size = size;
@@ -35,12 +89,18 @@ function create_map(size) //hàm tạo map
             sml+='<div class="containCell" style="width: '+(100/Size)+'%;height: '+(100/Size)+'%;">'
             sml+=   '<div id="_'+x+'_'+y+'" class="Cell" onmouseleave=mousel("_'+x+'_'+y+'") onmouseenter=mousel("_'+x+'_'+y+'") onclick=clickon("_'+x+'_'+y+'")></div>'
             sml+='</div>'
-            map[y].push(0)
+            map[y].push(new Object())
         }
     }
-    container.innerHTML = sml;
+    container.innerHTML = sml+'<canvas id="draw"></canvas>';
+    for(y=0;y<size;y++)
+    for(x=0;x<size;x++)
+        map[x][y] = new Node(document.getElementById("_"+x+"_"+y))
     from=true;
     to=true;
+    draw = document.getElementById("draw")
+    draw.width = container.offsetHeight-10
+    draw.height = draw.width
 } 
 function clickon(id_div)
 { 
@@ -70,14 +130,16 @@ function clickon(id_div)
             {
                 document.getElementById(id_div).classList.add('from')
                 from = false
-                cell_from=[x,y]
+                cell_from =[x,y]
+                node_from = new Node(document.getElementById(id_div))
             }
         }
         else
         {
             document.getElementById(id_div).classList.remove('from')
             from = true
-            cell_from=[-1,-1]
+            cell_from =[-1,-1]
+            node_from = undefined
         }
     }
     else
@@ -90,14 +152,16 @@ function clickon(id_div)
             {
                 document.getElementById(id_div).classList.add('to')
                 to = false
-                cell_to=[x,y]
+                cell_to = [x,y]
+                node_to = new Node(document.getElementById(id_div))
             }
         }
         else
         {
             document.getElementById(id_div).classList.remove('to')
             to = true
-            cell_to=[-1,-1]
+            cell_to = [-1,-1]
+            node_to = undefined
         }
     }
 }
@@ -149,156 +213,195 @@ function setText(str)
             document.getElementById("_"+x+"_"+y).classList.add('to')
             to=false
             cell_to= [x,y]
+            node_to = new Node(document.getElementById("_"+x+"_"+y))
         }
         if(data=='3')
         {
             document.getElementById("_"+x+"_"+y).classList.add('from')
             from=false
             cell_from = [x,y]
+            node_from = new Node(document.getElementById("_"+x+"_"+y))
         }
     }
     
 }
-f_resize()
 setText("3,,,,,,,,,,,,,,1,,1,,1,1,1,1,1,1,1,1,,1,,,,1,,,,,,,,,,,1,,1,,1,,1,1,1,,1,,,,1,1,,,,1,,1,,1,,,,1,,1,,1,,,1,,1,,1,1,1,,1,,1,,,,,1,,1,,,,,,1,,1,1,1,,,,,,,1,,1,1,1,,1,,,,,,,1,1,1,,1,,,,1,,1,1,,1,,1,,,,,,1,,1,,1,,,1,,1,,,1,1,1,1,,,,1,,,1,,1,,,,,,,,,,,,,1,,,,1,1,1,,1,1,1,,1,1,,1,1,1,1,,,1,,1,,,,1,,,,,,,,,,,1,,1,,,2,")
-function GetMap(x,y)
+//setText("3,,,,,,,,,,,1,,,,,,,,,1,,1,1,,,,,,1,,1,,,,,,,,,1,,2,,,,,,,1,,,,,,,,1,1,,,,,,,,,,,,,,,,,,,,,,,")
+//setText(",,,,,,,,,,,,,,,,,,,,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,2,,,,,,,,,,,,,,,,,,,,,")
+function show(type)
 {
-    a = x-cell_from[0]
-    b = y-cell_from[1]
-    hx = Math.sqrt(a*a+b*b)
-    gx = parseFloat(a+b)
-    if(!document.getElementById("_"+x+"_"+y).classList.contains("light"))
-        return parseFloat(gx+hx)
-    else
-        return null
-}
-function getHx(x,y)
-{
-    a = x-cell_from[0]
-    b = y-cell_from[1]
-    return Math.sqrt(a*a+b*b)
-}
-function getGx(x,y)
-{
-    a = x-cell_from[0]
-    b = y-cell_from[1]
-    return parseFloat(a+b)
-}
-function show(type=1)
-{
-    if(from==false&&to==false)
     for(let y=0;y<Size;y++)
     for(let x=0;x<Size;x++)
     {
-        if(type==1)map[x][y] = (getHx(x,y)+getGx(x,y)).toFixed(1)
-        if(type==2)map[x][y] = getHx(x,y).toFixed(1)
-        if(type==3)map[x][y] = getGx(x,y).toFixed(1)
-        document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+map[x][y]+"</p>"
+        if(type==1) document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+(map[x][y].get_f()).toFixed(1)+"</p>"
+        if(type==2) document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+(map[x][y].get_g()).toFixed(1)+"</p>"
+        if(type==3) document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+(map[x][y].get_h()).toFixed(1)+"</p>"
     }
 }
-var open = new Array()//mảng toàn cục chức phần tử open
-var close = new Array() //mảng toàn cục chứa các phần close 
-function print(m)
+var open = new Array()
+var close = new Array()
+function nodemin()
 {
-    return "P("+m[0]+","+m[1]+")"
-}
-function printArray()
-{
-    s="open: "
-    open.forEach(item=>{
-        s+= print(item)+", "
-    })
-    s+="\nclose: "
-    close.forEach(item=>{
-        s+= print(item)+", "
-    })
-    return s
-} 
-function isexist(m)
-{
-    for(i=0;i<close.length;i++)
+    let min = open[0]
+    let vt = 0
+    let gt = node_from.get_f()
+    for(i=1;i<open.length;i++)
     {
-        if(close[i][0]==m[0]&&close[i][1]==m[1])
+        if(Math.abs(gt-open[i].get_f())<Math.abs(gt-min.get_f()))
+        {
+            min = open[i]
+            vt = i ;
+        }
+    }
+    open.splice(vt,1)
+    return min
+}
+function isexist(m,clo)
+{
+    if(document.getElementById("_"+m[0]+"_"+m[1]).classList.contains("light"))
+        return true;
+    for(i=0;i<clo.length;i++)
+    {
+        if(clo[i].e==document.getElementById("_"+m[0]+"_"+m[1]))
         {
             return true
         }
     }
     return false
 }
-function addopen(m)
+function addnode(min)
 {
-    close.push([m[0],m[1]])
-    if(m[0]+1<Size&&GetMap(m[0]+1,m[1])!=null)
+    let tmp = min.e.id.split("_")
+    let x = parseInt(tmp[1])
+    let y = parseInt(tmp[2])
+    close.push(min)
+    if(x+1<Size)
     {
-        if(!isexist([m[0]+1,m[1]]))
+        if(!isexist([x+1,y],close)&&!isexist([x+1,y],open))
         {
-            open.push([m[0]+1,m[1]])
+            open.push(new Node(document.getElementById("_"+(x+1)+"_"+(y))))
+            open[open.length-1].back = min
         }
     }
-    if(m[1]+1<Size&&GetMap(m[0],m[1]+1)!=null)
+    if(y+1<Size)
     {
-        if(!isexist([m[0],m[1]+1]))
+        if(!isexist([x,y+1],close)&&!isexist([x,y+1],open))
         {
-            open.push([m[0],m[1]+1])
+            open.push(new Node(document.getElementById("_"+(x)+"_"+(y+1))))
+            open[open.length-1].back = min
         }
     }
-    if(m[0]-1>=0&&GetMap(m[0]-1,m[1])!=null)
+    if(x-1>=0)
     {
-        if(!isexist([m[0]-1,m[1]]))
+        if(!isexist([x-1,y],close)&&!isexist([x-1,y],open))
         {
-            open.push([m[0]-1,m[1]])
+            open.push(new Node(document.getElementById("_"+(x-1)+"_"+(y))))
+            open[open.length-1].back = min
         }
     }
-    if(m[1]-1>=0&&GetMap(m[0],m[1]-1)!=null)
+    if(y-1>=0)
     {
-        if(!isexist([m[0],m[1]-1]))
+        if(!isexist([x,y-1],close)&&!isexist([x,y-1],open))
         {
-            open.push([m[0],m[1]-1])
+            open.push(new Node(document.getElementById("_"+(x)+"_"+(y-1))))
+            open[open.length-1].back = min
         }
     }
-    vt = 0;
-    for(i=0;i<open.length;i++)
+    if(x-1>=0&&y-1>=0)
     {
-        if(open[i][0]==m[0]&&open[i][1]==m[1])
+        if(!isexist([x-1,y-1],close)&&!isexist([x-1,y-1],open))
         {
-            vt = i;
-            break;
+            open.push(new Node(document.getElementById("_"+(x-1)+"_"+(y-1))))
+            open[open.length-1].back = min
         }
     }
-    open.splice(vt,1);
-   
+    if(x+1<Size&&y+1<Size)
+    {
+        if(!isexist([x+1,y+1],close)&&!isexist([x+1,y+1],open))
+        {
+            open.push(new Node(document.getElementById("_"+(x+1)+"_"+(y+1))))
+            open[open.length-1].back = min
+        }
+    }
+    if(x+1<Size&&y-1>=0)
+    {
+        if(!isexist([x+1,y-1],close)&&!isexist([x+1,y-1],open))
+        {
+            open.push(new Node(document.getElementById("_"+(x+1)+"_"+(y-1))))
+            open[open.length-1].back = min
+        }
+    }
+    if(x-1>=0&&y+1<Size)
+    {
+        if(!isexist([x-1,y+1],close)&&!isexist([x-1,y+1],open))
+        {
+            open.push(new Node(document.getElementById("_"+(x-1)+"_"+(y+1))))
+            open[open.length-1].back = min
+        }
+    }
 }
 function color()
 {
-    close.forEach(i=>{
-        document.getElementById("_"+i[0]+"_"+i[1]).classList.add("close")
-    })
-    open.forEach(i=>{
-        document.getElementById("_"+i[0]+"_"+i[1]).classList.add("open")
+   open.forEach(item=>{
+       item.e.classList.add("open")
+   })
+   close.forEach(item=>{
+        item.e.classList.add("close")
     })
 }
-function getMinOpen()
+function back(node)
 {
-    min = [open[0][0],open[0][1]]
-    for(i=1;i<open.length;i++)
+    var ctx = draw.getContext("2d")
+    ctx.beginPath()
+    let x = node.e.offsetLeft+(node.e.offsetWidth/2)
+    let y = node.e.offsetTop+(node.e.offsetWidth/2)
+    ctx.moveTo(x, y)
+    while(true)
     {
-        if(GetMap(min[0],min[1])>GetMap(open[i][0],open[i][1]))
+        let x1 = node.e.offsetLeft+(node.e.offsetWidth/2)
+        let y1 = node.e.offsetTop+(node.e.offsetWidth/2)
+       
+
+        ctx.lineTo(x1, y1)
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "#c142e0"
+        ctx.stroke()
+        if(node.back==undefined)
         {
-            min = [open[i][0],open[i][1]]
+            break;
         }
+        node = node.back
     }
-    return min
+    ctx.closePath()
+    
 }
-function run(tem)
+function run()
 {
     open = new Array()
     close = new Array()
-    open.push([cell_from[0],cell_from[1]])
-    for(item = 0;item<tem;item++)
-    {
-       min = getMinOpen()
-       console.log(min)
-       addopen(min)
-       color()
-    }
+    open.push(node_from)
+    k = setInterval(e=>{
+        let nodenow = nodemin()
+        addnode(nodenow)
+        if( nodenow.e == node_to.e)
+        {
+            clearInterval(k)
+            back(nodenow)
+            return "success";
+        }
+        color()
+    },100)
+}
+
+f_resize()
+function changeCSS(cssFile, cssLinkIndex) {
+
+    var oldlink = document.getElementsByTagName("link").item(cssLinkIndex);
+
+    var newlink = document.createElement("link");
+    newlink.setAttribute("rel", "stylesheet");
+    newlink.setAttribute("type", "text/css");
+    newlink.setAttribute("href", cssFile);
+
+    document.getElementsByTagName("head").item(cssLinkIndex).replaceChild(newlink, oldlink);
 }

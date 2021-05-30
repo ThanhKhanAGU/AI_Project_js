@@ -1,6 +1,5 @@
 var container = document.getElementById("container")
-var lim = 1000
-var select = 1000
+var select = 0
 var left=0
 var from = true;
 var to = true;
@@ -79,6 +78,36 @@ function create_map(size) //hàm tạo map
     draw.width = container.offsetHeight-10
     draw.height = draw.width
 } 
+document.addEventListener("keyup",(e)=>
+{
+    e.preventDefault()
+    console.log(e);
+    if(e.code="KeyR")
+    {
+        RunView_A()
+    }else
+    if(e.code="KeyS")
+    {
+        RunView_B()
+    }else
+    if(e.code="KeyN")
+    {
+        newrun()
+    }else
+    if(e.code="KeyU")
+    {
+        makenew()
+    }else
+    if(e.code="KeyC")
+    {
+        copyToClipboard()
+    }else
+    if(e.code="KeyM")
+    {
+        selectmecung()
+    }
+    
+})
 document.addEventListener("mousedown",(e)=>
 {
     e.preventDefault()
@@ -89,8 +118,29 @@ document.addEventListener("mousedown",(e)=>
     {
         let x = parseInt(data[1])
         let y = parseInt(data[2])
-        if(e.buttons==1)
+        if(left==1)
         {
+            if(select==1)
+            {
+                left = 4
+                select = 0
+            }
+            else
+            if(select==2)
+            {
+                left = 2
+                select = 0
+            }
+            else
+            if(from==true)
+            {
+                left = 4
+            }
+            else
+            if(to==true)
+            {
+                left = 2
+            }else
             if(!cell.classList.contains("to")&&!cell.classList.contains("from"))
             {
                 if(cell.classList.contains("light"))
@@ -103,7 +153,8 @@ document.addEventListener("mousedown",(e)=>
                 }
             }
         }
-        if(e.buttons==2)
+        console.log(left);
+        if(left==2)
         {
             if(!cell.classList.contains("light")&&!cell.classList.contains("from"))
             {
@@ -124,7 +175,7 @@ document.addEventListener("mousedown",(e)=>
                 }
             }
         }
-        if(e.buttons==4)
+        if(left==4)
         {
             if(!cell.classList.contains("light")&&!cell.classList.contains("to"))
             {
@@ -201,9 +252,9 @@ function show(type)
     for(let y=0;y<Size;y++)
     for(let x=0;x<Size;x++)
     {
-        if(type==1) document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+(map[x][y].get_f()).toFixed(1)+"</p>"
-        if(type==2) document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+(map[x][y].get_g()).toFixed(1)+"</p>"
-        if(type==3) document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd'>"+(map[x][y].get_h()).toFixed(1)+"</p>"
+        if(type==1) document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd' style='font-size:"+250/Size+"px ;'>"+(map[x][y].get_f()).toFixed(1)+"</p>"
+        if(type==2) document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd' style='font-size:"+250/Size+"px ;'>"+(map[x][y].get_g()).toFixed(1)+"</p>"
+        if(type==3) document.getElementById("_"+x+"_"+y).innerHTML = "<p class='nd' style='font-size:"+250/Size+"px ;'>"+(map[x][y].get_h()).toFixed(1)+"</p>"
     }
 }
 var open = new Array()
@@ -313,27 +364,30 @@ function addnode(min)
 }
 function color()
 {
-   open.forEach(item=>{
-       item.e.classList.add("open")
-   })
-   close.forEach(item=>{
+    document.getElementById("slopen").innerText = open.length
+    document.getElementById("slclose").innerText = close.length
+    open.forEach(item=>{
+        item.e.classList.add("open")
+    })
+    close.forEach(item=>{
         item.e.classList.add("close")
     })
+    
 }
 var ctx
 function back(node)
 {
     ctx = draw.getContext("2d")
     ctx.beginPath()
-    let x = node.e.offsetLeft+(node.e.offsetWidth/2)-2
-    let y = node.e.offsetTop+(node.e.offsetWidth/2)-2
+    let x = node.e.offsetLeft+(node.e.offsetWidth/2)-50/Size
+    let y = node.e.offsetTop+(node.e.offsetWidth/2)-50/Size
     ctx.moveTo(x, y)
     while(true)
     {
-        let x1 = node.e.offsetLeft+(node.e.offsetWidth/2+0.5)-2
-        let y1 = node.e.offsetTop+(node.e.offsetWidth/2+0.5)-2
+        let x1 = node.e.offsetLeft+(node.e.offsetWidth/2)-50/Size
+        let y1 = node.e.offsetTop+(node.e.offsetWidth/2)-50/Size
         ctx.lineTo(x1, y1)
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 50/Size;
         ctx.strokeStyle = "#c142e0"
         ctx.stroke()
         if(node.back==undefined)
@@ -366,17 +420,25 @@ function RunView_A()
 {
     open = new Array()
     close = new Array()
-    clearrun()
     clearInterval(RunB)
+    clearInterval(RunK)
+    clearrun()
     open.push(node_from)
     s = 0;
+    buoc = 1
+    console.clear();
     RunK = setInterval(e=>{
        try{
+        console.log("Bước "+(buoc++)+": F("+cell_from[0]+", "+cell_from[1]+"), T("+cell_to[0]+", "+cell_to[1]+") ")
         let nodenow = nodemin()
+        tb=""
+        if(nodenow.e == node_to.e) tb = " là điểm đích T("+cell_to[0]+", "+cell_to[1]+"):\n Đường đi được tìm thấy !"
+        console.log("\tChọn P("+nodenow.e.id.split("_")[1]+", "+nodenow.e.id.split("_")[2]+")="+nodenow.get_f().toFixed(1)+tb);
         addnode(nodenow)
         if( nodenow.e == node_to.e)
         {
             clearInterval(RunK)
+            clearInterval(RunB)
             back(nodenow)
             RunB = setInterval(()=>{
                 try{
@@ -404,15 +466,35 @@ function RunView_A()
                     } 
                 }catch{}
             },0)
+            return;
         }else
         {
             s+=100;
         }
         time.innerText = parseInt(s/100);
+        log="\t Open: "
+        open.forEach(item=>{
+            item.e.classList.add("open")
+            data = item.e.id.split("_")
+            x = data[1]
+            y = data[2]
+            log+="P("+x+","+y+")="+item.get_f().toFixed(1)+", "
+        })
+        console.log(log);
+        log="\t Close: "
+        close.forEach(item=>{
+            item.e.classList.add("close")
+            data = item.e.id.split("_")
+            x = data[1]
+            y = data[2]
+            log+="P("+x+","+y+")="+item.get_f().toFixed(1)+", "
+        })
+        console.log(log);
         color()
        }
        catch{
-
+        console.clear()
+        console.log("Không Tìm Thấy đường đi!");
        }
     },100)
 }
@@ -420,8 +502,9 @@ function RunView_B()
 {
     open = new Array()
     close = new Array()
-    clearrun()
+    clearInterval(RunB)
     clearInterval(RunK)
+    clearrun()
     open.push(node_from)
     RunB = setInterval(()=>{
         if(from==false&&to==false)
@@ -454,10 +537,13 @@ function newrun()
 {
     clearInterval(RunK)
     clearInterval(RunB)
+    RunK=undefined
+    RunB = undefined
     clearrun()
 }
 function makenew()
 {
+    newrun()
     let x = prompt("Kích thước n (n < 60)","20")
     if(isNaN(parseInt(x)))
     {
@@ -476,10 +562,7 @@ function f_resize()
     draw.style.height = (container.offsetHeight-10)+"px"
 }
 f_resize()
-//setText("3,,,,,,,,,,,,,,1,,1,,1,1,1,1,1,1,1,1,,1,,,,1,,,,,,,,,,,1,,1,,1,,1,1,1,,1,,,,1,1,,,,1,,1,,1,,,,1,,1,,1,,,1,,1,,1,1,1,,1,,1,,,,,1,,1,,,,,,1,,1,1,1,,,,,,,1,,1,1,1,,1,,,,,,,1,1,1,,1,,,,1,,1,1,,1,,1,,,,,,1,,1,,1,,,1,,1,,,1,1,1,1,,,,1,,,1,,1,,,,,,,,,,,,,1,,,,1,1,1,,1,1,1,,1,1,,1,1,1,1,,,1,,1,,,,1,,,,,,,,,,,1,,1,,,2,")
-//setText("3,,,,,,,,,,,1,,,,,,,,,1,,1,1,,,,,,1,,1,,,,,,,,,1,,2,,,,,,,1,,,,,,,,1,1,,,,,,,,,,,,,,,,,,,,,,,")
-setText(",,,,,,,,,,,,,,,,,,,,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,2,,,,,,,,,,,,,,,,,,,,,")
-
+create_map(30)
 function copyToClipboard() 
 {
     text = getText()
@@ -490,7 +573,44 @@ function copyToClipboard()
     document.execCommand('copy');
     input.parentNode.removeChild(input);
 }
-function select()
+function selectmecung()
 {
-    
+
 }
+function hide()
+{
+    for(let y=0;y<Size;y++)
+    for(let x=0;x<Size;x++)
+    { 
+        document.getElementById("_"+x+"_"+y).innerHTML = ""
+    }
+}
+document.addEventListener("keyup",(e)=>
+{
+    e.preventDefault()
+    if(e.code=="KeyR")
+    {
+        RunView_A()
+    }else
+    if(e.code=="KeyS")
+    {
+        RunView_B()
+    }else
+    if(e.code=="KeyN")
+    {
+        newrun()
+    }else
+    if(e.code=="KeyU")
+    {
+        makenew()
+    }else
+    if(e.code=="KeyC")
+    {
+        copyToClipboard()
+    }else
+    if(e.code=="KeyM")
+    {
+        selectmecung()
+    }
+    
+})

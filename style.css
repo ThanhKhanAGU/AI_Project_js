@@ -155,5 +155,6 @@ hr{
 }
 .tt{
     color:white;
+    padding: 0px 0px 0px 20px ;
     font-family: 'Dancing Script','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

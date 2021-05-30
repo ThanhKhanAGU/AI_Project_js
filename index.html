@@ -5,18 +5,50 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI_project_JS</title>
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body onresize="f_resize()">
-    <div id="container" class="container" >
-    </div>
-    <div class="menu">
-        <div class="btn" onclick="select=lim">vật cản</div>
-        <div class="btn" onclick="select='from'">From</div>
-        <div class="btn" onclick="select='to'">To</div>
+    <div id="container" class="containerMain">      
     </div>
     <div class="tool">
+        <div class="btn light Cell"></div>
+        <h6 class="h6">VẬT CẢN</h6>
+        <div class="btn from Cell"></div>
+        <h6 class="h6">TỪ</h6>
+        <div class="btn to Cell"></div>
+        <h6 class="h6">ĐẾN</h6>
+        <div class="btn open Cell"></div>
+        <h6 class="h6">Ô MỞ</h6>
+        <div class="btn close Cell"></div>
+        <h6 class="h6">Ô ĐÓNG</h6>
+        <input id="cheo" type="checkbox" class="btn">
+        <h6 class="h6">ĐI CHÉO</h6>
+        <input id="astar" name="thuat" type="radio" class="btn" checked="true">
+        <h6 class="h6">A Star</h6>
+        <input id="Dijstra" name="thuat" type="radio" class="btn">
+        <h6 class="h6">Dijstra</h6>
+        <div class="btn Cell btn-click" onclick="RunView_A()">CHẠY</div>
+        <div class="btn Cell btn-click" onclick="RunView_B()">KẾT QUẢ</div>
+        <div class="btn Cell btn-click" onclick="newrun()">TẠO MỚI</div>
+        <div class="btn Cell btn-click" onclick="makenew()">TẠO MỚI RỖNG</div>
+        <div class="btn Cell btn-click" onclick="copyToClipboard()">COPY MÊ CUNG</div>
+        <div class="btn Cell btn-click" onclick="select()">CHỌN ME CUNG</div>
+    </div>
+    <div class="tool_show">
+        <span id="time" class="timer">0</span>
+        <span class="timer">time</span>
+        <br/>
+        <br/>
+        <span class="btn light Cell timer"></span>
+        <span class="timer"> Left mouse</span>
+        <br>
+        <span class="btn from Cell timer"></span>
+        <span class="timer"> Middle mouse</span>
+        <br>
+        <span class="btn to Cell timer"></span>
+        <span class="timer"> Right mouse</span>
+        <br>
     </div>
 </body>
-<script src="code/code_main.js"></script>
+<script src="code_main.js"></script>
 </html>

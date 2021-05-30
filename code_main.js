@@ -403,13 +403,13 @@ function back(node)
     draw.style.height = (container.offsetHeight-10)+"px"
     ctx = draw.getContext("2d")
     ctx.beginPath()
-    let x = node.e.offsetLeft+(node.e.offsetWidth/2)-50/Size
-    let y = node.e.offsetTop+(node.e.offsetWidth/2)-50/Size
+    let x = (node.e.offsetLeft-5)+(node.e.offsetWidth/2)
+    let y = (node.e.offsetTop-5)+(node.e.offsetWidth/2)
     ctx.moveTo(x, y)
     while(true)
     {
-        let x1 = node.e.offsetLeft+(node.e.offsetWidth/2)-50/Size
-        let y1 = node.e.offsetTop+(node.e.offsetWidth/2)-50/Size
+        let x1 = (node.e.offsetLeft-5)+(node.e.offsetWidth/2)
+        let y1 = (node.e.offsetTop-5)+(node.e.offsetWidth/2)
         ctx.lineTo(x1, y1)
         ctx.lineWidth = 50/Size;
         ctx.strokeStyle = "#c142e0"
@@ -534,17 +534,18 @@ function RunView_B()
         if(from==false&&to==false)
         {
            try{
+               //bắt đầu thuật toán
             open = new Array()
             close = new Array()
             clearrun()
-            open.push(node_from)
+            open.push(node_from)// thêm node from vào open
             s = 0;
             while(true){
-                let nodenow = nodemin()
-                addnode(nodenow)
-                if( nodenow.e == node_to.e)
+                let nodenow = nodemin()// lấy node nhỏ nhất trong open ra thêm vào close và loại bỏ khổi open
+                addnode(nodenow)//thêm các node mà node đang xet có thể đi đến
+                if( nodenow.e == node_to.e)// nếu node đang xét bằng node cần đến thì ngường vòng lập
                 {
-                    back(nodenow)
+                    back(nodenow)// trả vè đường đi ngắn nhất
                     break;
                 }
                 else{
@@ -552,7 +553,7 @@ function RunView_B()
                 }
             }
             time.innerText = parseInt(s/100);
-            color()  
+            color()  // in open và close
            }catch{}       
         } 
     },0)

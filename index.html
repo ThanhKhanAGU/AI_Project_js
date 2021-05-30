@@ -5,28 +5,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI_project_JS</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body onresize="f_resize()">
     <div id="container" class="containerMain">      
     </div>
     <div class="tool">
+        <h2 class="h6">CHỨC NĂNG</h2>
+        <hr>
         <input id="cheo" type="checkbox" class="btn">
-        <h6 class="h6">ĐI CHÉO</h6>
+        <span class="h6">CHÉO (X)</span>
+        <hr>
         <input id="astar" name="thuat" type="radio" class="btn" checked="true">
-        <h6 class="h6">A Star</h6>
+        <span class="h6">A STAR (A)</span>
+        <br>
         <input id="Dijstra" name="thuat" type="radio" class="btn">
-        <h6 class="h6">Dijstra</h6>
+        <span class="h6">DIJSTRA (D)</span>
+        <hr>
         <div class="btn Cell btn-click" onclick="RunView_A()">CHẠY(R)</div>
         <div class="btn Cell btn-click" onclick="RunView_B()">KẾT QUẢ(S)</div>
         <div class="btn Cell btn-click" onclick="newrun()">TẠO MỚI(N)</div>
         <div class="btn Cell btn-click" onclick="makenew()">TẠO MỚI RỖNG(U)</div>
-        <div class="btn Cell btn-click" onclick="copyToClipboard()">COPY MÊ CUNG(C)</div>
-        <div class="btn Cell btn-click" onclick="selectmecung()">CHỌN MÊ CUNG(M)</div>
-        <div class="btn Cell btn-click" onclick="show(3)">SHOW H(x) </div>
-        <div class="btn Cell btn-click" onclick="show(2)">SHOW G(x) </div>
-        <div class="btn Cell btn-click" onclick="show(1)">SHOW F(x) </div>
-        <div class="btn Cell btn-click" onclick="hide()">HIDE</div>
+        <div class="btn Cell btn-click" onclick="random()">NGẪU NHIÊN(V)</div>
+        <div class="btn Cell btn-click" onclick="show(3)">SHOW H(x) (H)</div>
+        <div class="btn Cell btn-click" onclick="show(2)">SHOW G(x) (G)</div>
+        <div class="btn Cell btn-click" onclick="show(1)">SHOW F(x) (F)</div>
+        <div class="btn Cell btn-click" onclick="hide()">HIDE (Z)</div>
+        <hr>
     </div>
     <div class="tool_show">
         <span class="timer">Thời Gian:</span>
@@ -38,6 +45,9 @@
         <br>
         <span class="timer">Phần tử Close:</span>
         <span id="slclose" class="timer">0</span>
+        <br>
+        <span class="timer">Kích Thước:</span>
+        <span id="size" class="timer">0</span>
         <hr>
         <span class="btn light Cell timer"></span>
         <span class="timer"> Left mouse (barrier)</span>
@@ -54,7 +64,11 @@
         <span class="btn close Cell timer"></span>
         <span class="timer"> Close cell</span>
         <hr>  
-
+        <div class="tt">Nguyễn Thị Lệ Hằng</div>
+        <div class="tt">Trần Thanh Khan</div>
+        <div class="tt">Bùi Nhật Trường Linh</div>
+        <div class="tt">Trương Như Ý</div>
+        <hr>
     </div>
 </body>
 <script src="code_main.js"></script>

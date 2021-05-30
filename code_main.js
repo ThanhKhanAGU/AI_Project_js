@@ -54,6 +54,7 @@ var node_from
 var node_to
 function create_map(size) //hàm tạo map
 {
+    
     Size = size;
     let sml = ""
     map = new Array();
@@ -77,36 +78,57 @@ function create_map(size) //hàm tạo map
     draw = document.getElementById("draw")
     draw.width = container.offsetHeight-10
     draw.height = draw.width
+    document.getElementById("size").innerText = Size+"x"+Size
+    newrun()
 } 
 document.addEventListener("keyup",(e)=>
 {
     e.preventDefault()
-    console.log(e);
-    if(e.code="KeyR")
+    if(e.code=="KeyR")
     {
         RunView_A()
     }else
-    if(e.code="KeyS")
+    if(e.code=="KeyS")
     {
         RunView_B()
     }else
-    if(e.code="KeyN")
+    if(e.code=="KeyN")
     {
         newrun()
     }else
-    if(e.code="KeyU")
+    if(e.code=="KeyU")
     {
         makenew()
     }else
-    if(e.code="KeyC")
+    if(e.code=="KeyV")
     {
-        copyToClipboard()
-    }else
-    if(e.code="KeyM")
-    {
-        selectmecung()
+        random()
     }
-    
+    else
+    if(e.code=="KeyH")
+    {
+        show(3)
+    }
+    else
+    if(e.code=="KeyG")
+    {
+        show(2)
+    }
+    else
+    if(e.code=="KeyF")
+    {
+        show(1)
+    }
+    else
+    if(e.code=="KeyX")
+    {
+        document.getElementById("cheo").checked = !document.getElementById("cheo").checked
+    }
+    else
+    if(e.code=="KeyD")
+    {
+        document.getElementById("Dijstra").checked = true
+    }
 })
 document.addEventListener("mousedown",(e)=>
 {
@@ -614,3 +636,33 @@ document.addEventListener("keyup",(e)=>
     }
     
 })
+
+function abc(text)
+{
+    s = text.split("\n");
+    sl=0
+    Size = parseInt(s[0])
+    create_map(Size)
+    for(i=1;i<s.length-1;i++)
+    {
+        data = s[i].split("-")
+        if(data[2]=="100")
+        {
+            map[parseInt(data[0])][parseInt(data[1])].e.classList.add("light")
+        }
+    }
+}
+function random()
+{
+    Size = parseInt(Math.random()*55+5)
+    create_map(Size)
+    gt = Math.random()*0.5+0.2
+    for(y=0;y<Size;y++)
+    for(x=0;x<Size;x++)
+    {
+        if(Math.random()<gt)
+        {
+            map[x][y].e.classList.add("light");
+        }
+    }
+}

@@ -399,6 +399,8 @@ function color()
 var ctx
 function back(node)
 {
+    draw.style.width = (container.offsetHeight-10)+"px"
+    draw.style.height = (container.offsetHeight-10)+"px"
     ctx = draw.getContext("2d")
     ctx.beginPath()
     let x = node.e.offsetLeft+(node.e.offsetWidth/2)-50/Size
@@ -594,10 +596,6 @@ function copyToClipboard()
     input.select();
     document.execCommand('copy');
     input.parentNode.removeChild(input);
-}
-function selectmecung()
-{
-
 }
 function hide()
 {

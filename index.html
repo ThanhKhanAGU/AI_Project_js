@@ -16,9 +16,6 @@
     <div class="tool">
         <h2 class="h6">CHỨC NĂNG</h2>
         <hr>
-        <input id="cheo" type="checkbox" class="btn">
-        <span class="h6">CHÉO (X)</span>
-        <hr>
         <input id="astar" name="thuat" type="radio" class="btn" checked="true">
         <span class="h6">A STAR (A)</span>
         <br>
@@ -26,7 +23,7 @@
         <span class="h6">DIJSTRA (D)</span>
         <hr>
         <div class="btn Cell btn-click" onclick="RunView_A()">CHẠY(R)</div>
-        <div class="btn Cell btn-click" onclick="RunView_B()">KẾT QUẢ(S)</div>
+        <div class="btn Cell btn-click" onclick="Result()">KẾT QUẢ(S)</div>
         <div class="btn Cell btn-click" onclick="newrun()">TẠO MỚI(N)</div>
         <div class="btn Cell btn-click" onclick="makenew()">TẠO MỚI RỖNG(U)</div>
         <div class="btn Cell btn-click" onclick="random()">NGẪU NHIÊN(V)</div>
@@ -40,6 +37,10 @@
         <span class="timer">Thời Gian:</span>
         <span id="time" class="timer">0</span>
         <span class="timer">time</span>
+        <br>
+        <span class="timer">Chi phí:</span>
+        <span id="buoc" class="timer">0</span>
+        <span class="timer">step(s)</span>
         <br>
         <span class="timer">Phần tử Open:</span>
         <span id="slopen" class="timer">0</span>

@@ -4,40 +4,63 @@ var left=0
 var from = true;
 var to = true;
 var draw;
+var runauto = false;
 var setadd = true;
 var cell_from = [-1,-1];
 var cell_to = [-1,-1]
 var time = document.getElementById("time")
-document.getElementById("cheo").checked = false
+var slbuoc = document.getElementById("buoc")
 document.addEventListener('contextmenu', event => event.preventDefault())
 // biến quản lý so luong Ô
-var Size = 20 // mặc định là 20px
+var Size = 15 // mặc định là 20px
 var map = new Array()
+var node_from
+var node_to
+function tinhg(n)
+{
+    let gt =0
+    node = new Node(n.e)
+    node.back = n.back
+    while(node.back != undefined)
+    {
+        let back = node.back
+        let a = node.x() - back.x()
+        let b = node.y() - back.y()
+        gt += Math.sqrt(a*a+b*b)
+        node = back
+    }
+    return gt
+}
 class Node
 {
     constructor(element)
     {
-        this.back
+        this.back = undefined
         this.e = element
     } 
+    set_back(node)
+    {
+        this.back = node_from
+        if(node_to!=undefined) node_to.back = node_from
+    }
+    x()
+    {
+        return parseInt(this.e.id.split("_")[1])
+    }
+    y()
+    {
+        return parseInt(this.e.id.split("_")[2])
+    }
     get_g()
     {
-        let tmp = this.e.id.split("_")
-        let x = parseInt(tmp[1])
-        let y = parseInt(tmp[2])
-        let a = x-cell_from[0]
-        let b = y-cell_from[1]
-        return Math.sqrt(a*a+b*b)
+        return tinhg(this)    
     }
     get_h()
     {
         if(document.getElementById("astar").checked == true)
         {
-            let tmp = this.e.id.split("_")
-            let x = parseInt(tmp[1])
-            let y = parseInt(tmp[2])
-            let a = x-cell_to[0]
-            let b = y-cell_to[1]
+            let a = this.x()-cell_to[0]
+            let b = this.y()-cell_to[1]
             return Math.sqrt(a*a+b*b)
         }
         else 
@@ -50,11 +73,8 @@ class Node
         return this.get_h()+this.get_g()
     }
 }
-var node_from
-var node_to
 function create_map(size) //hàm tạo map
 {
-    
     Size = size;
     let sml = ""
     map = new Array();
@@ -81,57 +101,9 @@ function create_map(size) //hàm tạo map
     document.getElementById("size").innerText = Size+"x"+Size
     newrun()
 } 
-document.addEventListener("keyup",(e)=>
-{
-    e.preventDefault()
-    if(e.code=="KeyR")
-    {
-        RunView_A()
-    }else
-    if(e.code=="KeyS")
-    {
-        RunView_B()
-    }else
-    if(e.code=="KeyN")
-    {
-        newrun()
-    }else
-    if(e.code=="KeyU")
-    {
-        makenew()
-    }else
-    if(e.code=="KeyV")
-    {
-        random()
-    }
-    else
-    if(e.code=="KeyH")
-    {
-        show(3)
-    }
-    else
-    if(e.code=="KeyG")
-    {
-        show(2)
-    }
-    else
-    if(e.code=="KeyF")
-    {
-        show(1)
-    }
-    else
-    if(e.code=="KeyX")
-    {
-        document.getElementById("cheo").checked = !document.getElementById("cheo").checked
-    }
-    else
-    if(e.code=="KeyD")
-    {
-        document.getElementById("Dijstra").checked = true
-    }
-})
 document.addEventListener("mousedown",(e)=>
 {
+   
     e.preventDefault()
     left=e.buttons
     let cell = e.path[0]
@@ -175,7 +147,6 @@ document.addEventListener("mousedown",(e)=>
                 }
             }
         }
-        console.log(left);
         if(left==2)
         {
             if(!cell.classList.contains("light")&&!cell.classList.contains("from"))
@@ -218,7 +189,16 @@ document.addEventListener("mousedown",(e)=>
                 }
             }
         }
+        for(j=0;j<Size;j++)
+        for(i=0;i<Size;i++)
+        {
+            map[i][j].set_back()
+        }
     }  
+    if(runauto==true) 
+    {
+        RunView_B()
+    }
 })
 function getText()
 {
@@ -285,116 +265,112 @@ function nodemin()
 {
     let min = open[0]
     let vt = 0
-    let gt = node_to.get_h()
     for(i=1;i<open.length;i++)
     {
-        if(Math.abs(gt-open[i].get_f())<Math.abs(gt-min.get_f()))
+        if(open[i].get_f()<min.get_f())
         {
             min = open[i]
             vt = i ;
+        }
+        else if(open[i].get_f()==min.get_f())
+        {
+            if(open[i].get_g()<min.get_g())
+            {
+                min = open[i]
+                vt = i ;
+            }
         }
     }
     open.splice(vt,1)
     return min
 }
-function isexist(m,clo)
+function isexit(node,clo)
 {
-    if(document.getElementById("_"+m[0]+"_"+m[1]).classList.contains("light"))
-        return true;
     for(i=0;i<clo.length;i++)
     {
-        if(clo[i].e==document.getElementById("_"+m[0]+"_"+m[1]))
+        if(clo[i].e.id==node.e.id)
         {
-            return true
+            return i
         }
     }
-    return false
+    return -1
 }
+function getG(node,back)
+{
+    a = node.x() - back.x()
+    b = node.y() - node.y()
+    return Math.sqrt(a*a+b*b)
+}
+var ar
 function addnode(min)
 {
-    let tmp = min.e.id.split("_")
-    let x = parseInt(tmp[1])
-    let y = parseInt(tmp[2])
     close.push(min)
-    if(x+1<Size)
-    {
-        if(!isexist([x+1,y],close)&&!isexist([x+1,y],open))
+    ar = new Array()// lưu trữ danh sách tất cả các con
+    for(j=-1;j<2;j++)
+    for(i=-1;i<2;i++)// Lấy danh sách các con của min
+    {   
+        if(map[min.x()+i]!=undefined)
+        if(map[min.x()+i][min.y()+j]!=undefined) 
+        if(map[min.x()+i][min.y()+j].e!=min.e&&
+        !map[min.x()+i][min.y()+j].e.classList.contains("light"))
         {
-            open.push(new Node(document.getElementById("_"+(x+1)+"_"+(y))))
-            open[open.length-1].back = min
-        }
+            ar.push(map[min.x()+i][min.y()+j])
+        }    
     }
-    if(y+1<Size)
+    for( k=0;k<ar.length;k++)//láy từng con ra so sánh
     {
-        if(!isexist([x,y+1],close)&&!isexist([x,y+1],open))
-        {
-            open.push(new Node(document.getElementById("_"+(x)+"_"+(y+1))))
-            open[open.length-1].back = min
-        }
-    }
-    if(x-1>=0)
-    {
-        if(!isexist([x-1,y],close)&&!isexist([x-1,y],open))
-        {
-            open.push(new Node(document.getElementById("_"+(x-1)+"_"+(y))))
-            open[open.length-1].back = min
-        }
-    }
-    if(y-1>=0)
-    {
-        if(!isexist([x,y-1],close)&&!isexist([x,y-1],open))
-        {
-            open.push(new Node(document.getElementById("_"+(x)+"_"+(y-1))))
-            open[open.length-1].back = min
-        }
-    }
-    if(document.getElementById("cheo").checked)
-    {
-        if(x-1>=0&&y-1>=0)
-        {
-            if(!isexist([x-1,y-1],close)&&!isexist([x-1,y-1],open))
+       if(isexit(ar[k],open)==-1&&isexit(ar[k],close)==-1)
+       {
+            ar[k].back= min
+            open.push(ar[k])
+       }else
+       {
+            if(isexit(ar[k],open)!=-1)
             {
-                open.push(new Node(document.getElementById("_"+(x-1)+"_"+(y-1))))
-                open[open.length-1].back = min
+                x = new Node(ar[k].e)
+                x.back = min
+                if(open[isexit(ar[k],open)].get_g()>x.get_g())
+                {
+                    open[isexit(ar[k],open)].back = min
+                }
             }
-        }
-        if(x+1<Size&&y+1<Size)
-        {
-            if(!isexist([x+1,y+1],close)&&!isexist([x+1,y+1],open))
+            if(isexit(ar[k],close)!=-1)
             {
-                open.push(new Node(document.getElementById("_"+(x+1)+"_"+(y+1))))
-                open[open.length-1].back = min
+                x = new Node(ar[k].e)
+                x.back = min
+               if(close[isexit(ar[k],close)].get_g()>x.get_g())
+               {
+                    ar[k].back = min
+                    open.push(ar[k])
+                    close.splice(isexit(ar[k],close),1)
+
+               }
             }
-        }
-        if(x+1<Size&&y-1>=0)
-        {
-            if(!isexist([x+1,y-1],close)&&!isexist([x+1,y-1],open))
-            {
-                open.push(new Node(document.getElementById("_"+(x+1)+"_"+(y-1))))
-                open[open.length-1].back = min
-            }
-        }
-        if(x-1>=0&&y+1<Size)
-        {
-            if(!isexist([x-1,y+1],close)&&!isexist([x-1,y+1],open))
-            {
-                open.push(new Node(document.getElementById("_"+(x-1)+"_"+(y+1))))
-                open[open.length-1].back = min
-            }
-        }
+       }
+       
     }
 }
 function color()
 {
     document.getElementById("slopen").innerText = open.length
     document.getElementById("slclose").innerText = close.length
+    clearrun()
     open.forEach(item=>{
+        while(item.e.classList.contains("open")||item.e.classList.contains("close"))
+        {
+            item.e.classList.remove("open")
+            item.e.classList.remove("close")
+        }
         item.e.classList.add("open")
     })
     close.forEach(item=>{
+        while(item.e.classList.contains("open")||item.e.classList.contains("close"))
+        {
+            item.e.classList.remove("open")
+            item.e.classList.remove("close")
+        }
         item.e.classList.add("close")
     })
-    
 }
 var ctx
 function back(node)
@@ -402,24 +378,24 @@ function back(node)
     draw.style.width = (container.offsetHeight-10)+"px"
     draw.style.height = (container.offsetHeight-10)+"px"
     ctx = draw.getContext("2d")
+    ctx.clearRect(0,0,draw.width,draw.height)
     ctx.beginPath()
     let x = (node.e.offsetLeft-5)+(node.e.offsetWidth/2)
     let y = (node.e.offsetTop-5)+(node.e.offsetWidth/2)
     ctx.moveTo(x, y)
-    while(true)
+    let bc = 1;
+    while(node!=undefined)
     {
         let x1 = (node.e.offsetLeft-5)+(node.e.offsetWidth/2)
         let y1 = (node.e.offsetTop-5)+(node.e.offsetWidth/2)
         ctx.lineTo(x1, y1)
-        ctx.lineWidth = 50/Size;
-        ctx.strokeStyle = "#c142e0"
+        ctx.lineWidth = 80/Size;
+        ctx.strokeStyle = "#F000F0"
         ctx.stroke()
-        if(node.back==undefined)
-        {
-            break;
-        }
         node = node.back
+        bc++
     }
+    slbuoc.innerText = bc
     ctx.closePath()  
 }
 
@@ -428,9 +404,9 @@ function clearrun()
     for(y=0;y<Size;y++)
         for(x=0;x<Size;x++)
         {
-            if(map[x][y].e.classList.contains("open"))
+            while(map[x][y].e.classList.contains("open"))
                 map[x][y].e.classList.remove("open")
-            if(map[x][y].e.classList.contains("close"))
+            while(map[x][y].e.classList.contains("close"))
                 map[x][y].e.classList.remove("close")
         }
     try{
@@ -439,86 +415,41 @@ function clearrun()
    
 }
 var RunK
-var RunB
+var RunB = false
 function RunView_A()
 {
     open = new Array()
     close = new Array()
-    clearInterval(RunB)
     clearInterval(RunK)
     clearrun()
     open.push(node_from)
     s = 0;
     buoc = 1
     console.clear();
+    runauto = true;
+    if(from==false&&to==false)
     RunK = setInterval(e=>{
        try{
-        console.log("Bước "+(buoc++)+": F("+cell_from[0]+", "+cell_from[1]+"), T("+cell_to[0]+", "+cell_to[1]+") ")
         let nodenow = nodemin()
         tb=""
         if(nodenow.e == node_to.e) tb = " là điểm đích T("+cell_to[0]+", "+cell_to[1]+"):\n Đường đi được tìm thấy !"
-        console.log("\tChọn P("+nodenow.e.id.split("_")[1]+", "+nodenow.e.id.split("_")[2]+")="+nodenow.get_f().toFixed(1)+tb);
-        addnode(nodenow)
+        color()
+        back(nodenow)
         if( nodenow.e == node_to.e)
         {
             clearInterval(RunK)
-            clearInterval(RunB)
             back(nodenow)
-            RunB = setInterval(()=>{
-                try{
-                    if(from==false&&to==false)
-                    {
-                        open = new Array()
-                        close = new Array()
-                        clearrun()
-                        open.push(node_from)
-                        s = 0;
-                        while(true){
-                            let nodenow = nodemin()
-                            addnode(nodenow)
-                            if( nodenow.e == node_to.e)
-                            {
-                                back(nodenow)
-                                break;
-                            }else
-                            {
-                                s+=100;
-                            }
-                        }
-                        time.innerText = parseInt(s/100);
-                        color()
-                    } 
-                }catch{}
-            },0)
-            return;
         }else
         {
             s+=100;
         }
-        time.innerText = parseInt(s/100);
-        log="\t Open: "
-        open.forEach(item=>{
-            item.e.classList.add("open")
-            data = item.e.id.split("_")
-            x = data[1]
-            y = data[2]
-            log+="P("+x+","+y+")="+item.get_f().toFixed(1)+", "
-        })
-        console.log(log);
-        log="\t Close: "
-        close.forEach(item=>{
-            item.e.classList.add("close")
-            data = item.e.id.split("_")
-            x = data[1]
-            y = data[2]
-            log+="P("+x+","+y+")="+item.get_f().toFixed(1)+", "
-        })
-        console.log(log);
-        color()
+        addnode(nodenow)
+        time.innerText = s/100
        }
        catch{
         console.clear()
         console.log("Không Tìm Thấy đường đi!");
+        color()
        }
     },100)
 }
@@ -526,44 +457,39 @@ function RunView_B()
 {
     open = new Array()
     close = new Array()
-    clearInterval(RunB)
-    clearInterval(RunK)
-    clearrun()
     open.push(node_from)
-    RunB = setInterval(()=>{
-        if(from==false&&to==false)
+    if(from==false&&to==false)
+    {
+        try{
+            //bắt đầu thuật toán
+        open = new Array()
+        close = new Array()
+        open.push(node_from)// thêm node from vào open
+        s = 0;
+        while(true)
         {
-           try{
-               //bắt đầu thuật toán
-            open = new Array()
-            close = new Array()
-            clearrun()
-            open.push(node_from)// thêm node from vào open
-            s = 0;
-            while(true){
-                let nodenow = nodemin()// lấy node nhỏ nhất trong open ra thêm vào close và loại bỏ khổi open
-                addnode(nodenow)//thêm các node mà node đang xet có thể đi đến
-                if( nodenow.e == node_to.e)// nếu node đang xét bằng node cần đến thì ngường vòng lập
-                {
-                    back(nodenow)// trả vè đường đi ngắn nhất
-                    break;
-                }
-                else{
-                    s+=100;
-                }
+            let nodenow = nodemin()// lấy node nhỏ nhất trong open ra thêm vào close và loại bỏ khổi open
+            addnode(nodenow)//thêm các node mà node đang xet có thể đi đến
+            if( nodenow.e == node_to.e)// nếu node đang xét bằng node cần đến thì ngường vòng lập
+            {
+                time.innerText = parseInt(s/100);
+                color()  // in open và close
+                back(nodenow)// trả vè đường đi ngắn nhất
+                break;
             }
-            time.innerText = parseInt(s/100);
-            color()  // in open và close
-           }catch{}       
-        } 
-    },0)
+            else{
+                s+=100;
+            }
+        }
+        }catch{
+            color()
+        }       
+    } 
 }
 function newrun()
 {
     clearInterval(RunK)
-    clearInterval(RunB)
-    RunK=undefined
-    RunB = undefined
+    runauto = false
     clearrun()
 }
 function makenew()
@@ -579,7 +505,7 @@ function makenew()
         create_map(parseInt(x))
     }
 }
-create_map(20)
+create_map(15)
 function f_resize()
 {
     container.style.width = container.offsetHeight+"px";
@@ -587,7 +513,6 @@ function f_resize()
     draw.style.height = (container.offsetHeight-10)+"px"
 }
 f_resize()
-create_map(30)
 function copyToClipboard() 
 {
     text = getText()
@@ -615,7 +540,7 @@ document.addEventListener("keyup",(e)=>
     }else
     if(e.code=="KeyS")
     {
-        RunView_B()
+        Result()
     }else
     if(e.code=="KeyN")
     {
@@ -664,4 +589,9 @@ function random()
             map[x][y].e.classList.add("light");
         }
     }
+}
+function Result()
+{
+    runauto=true
+    RunView_B()
 }

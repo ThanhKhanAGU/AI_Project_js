@@ -383,7 +383,7 @@ function back(node)
     let x = (node.e.offsetLeft-5)+(node.e.offsetWidth/2)
     let y = (node.e.offsetTop-5)+(node.e.offsetWidth/2)
     ctx.moveTo(x, y)
-    let bc = 1;
+    let bc = -1;
     while(node!=undefined)
     {
         let x1 = (node.e.offsetLeft-5)+(node.e.offsetWidth/2)
@@ -578,7 +578,6 @@ function abc(text)
 }
 function random()
 {
-    Size = parseInt(Math.random()*55+5)
     create_map(Size)
     gt = Math.random()*0.5+0.2
     for(y=0;y<Size;y++)

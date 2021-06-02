@@ -103,8 +103,10 @@ function create_map(size) //hàm tạo map
                 let data = e.target.id.split("_")
                 if(!e.target.classList.contains("to")&&!e.target.classList.contains("from"))
                 {
-                    if(xoa == 0 )e.target.classList.remove("light")                  
-                    if(them == 0 )e.target.classList.add("light")
+                    if(xoa == 0 )
+                        e.target.classList.remove("light")                  
+                    if(them == 0 )
+                        e.target.classList.add("light")
                 }
            }
         }

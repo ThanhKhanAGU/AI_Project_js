@@ -101,6 +101,14 @@ function create_map(size) //hàm tạo map
     document.getElementById("size").innerText = Size+"x"+Size
     newrun()
 } 
+document.addEventListener("mouseup",(e)=>
+{
+    left = 0
+    if(runauto==true) 
+    {
+        RunView_B()
+    }
+})
 document.addEventListener("mousedown",(e)=>
 {
    
@@ -165,6 +173,7 @@ document.addEventListener("mousedown",(e)=>
                     cell_to = [x,y]
                     to = false
                     node_to = new Node(cell)
+                    left = 0
                 }
             }
         }
@@ -176,6 +185,7 @@ document.addEventListener("mousedown",(e)=>
                 {
                     cell.classList.remove("from")
                     from = false
+                    left=0
                 }
                 else
                 {
@@ -195,10 +205,6 @@ document.addEventListener("mousedown",(e)=>
             map[i][j].set_back()
         }
     }  
-    if(runauto==true) 
-    {
-        RunView_B()
-    }
 })
 function getText()
 {
@@ -576,14 +582,14 @@ function abc(text)
         }
     }
 }
+
 function random()
 {
     create_map(Size)
-    gt = Math.random()*0.5+0.2
     for(y=0;y<Size;y++)
     for(x=0;x<Size;x++)
     {
-        if(Math.random()<gt)
+        if(Math.random()<0.4)
         {
             map[x][y].e.classList.add("light");
         }

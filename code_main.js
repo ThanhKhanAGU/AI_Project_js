@@ -84,7 +84,7 @@ function create_map(size) //hàm tạo map
         for(let x=0;x<size;x++)
         {
             sml+='<div class="containCell" style="width: '+(100/Size)+'%;height: '+(100/Size)+'%;">'
-            sml+=   '<div id="_'+x+'_'+y+'" class="Cell" ></div>'
+            sml+=   '<div id="_'+x+'_'+y+'" class="Cell"></div>'
             sml+='</div>'
             map[y].push(new Object())
         }
@@ -92,7 +92,27 @@ function create_map(size) //hàm tạo map
     container.innerHTML = sml+'<canvas id="draw"></canvas>';
     for(y=0;y<size;y++)
     for(x=0;x<size;x++)
+    {
         map[x][y] = new Node(document.getElementById("_"+x+"_"+y))
+        map[x][y].e.onmouseenter = (e)=>{
+           console.log(e.target.id +" = "+left);
+           if(left==1)
+           {
+                let data = e.target.id.split("_")
+                if(!e.target.classList.contains("to")&&!e.target.classList.contains("from"))
+                {
+                    if(e.target.classList.contains("light"))
+                    {
+                        e.target.classList.remove("light")
+                    }
+                    else
+                    {
+                        e.target.classList.add("light")
+                    }
+                }
+           }
+        }
+    }
     from=true;
     to=true;
     draw = document.getElementById("draw")

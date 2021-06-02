@@ -10,6 +10,8 @@ var cell_from = [-1,-1];
 var cell_to = [-1,-1]
 var time = document.getElementById("time")
 var slbuoc = document.getElementById("buoc")
+var them = 1
+var xoa = 1
 document.addEventListener('contextmenu', event => event.preventDefault())
 // biến quản lý so luong Ô
 var Size = 15 // mặc định là 20px
@@ -101,14 +103,8 @@ function create_map(size) //hàm tạo map
                 let data = e.target.id.split("_")
                 if(!e.target.classList.contains("to")&&!e.target.classList.contains("from"))
                 {
-                    if(e.target.classList.contains("light"))
-                    {
-                        e.target.classList.remove("light")
-                    }
-                    else
-                    {
-                        e.target.classList.add("light")
-                    }
+                    if(xoa == 0 )e.target.classList.remove("light")                  
+                    if(them == 0 )e.target.classList.add("light")
                 }
            }
         }
@@ -124,6 +120,8 @@ function create_map(size) //hàm tạo map
 document.addEventListener("mouseup",(e)=>
 {
     left = 0
+    them = 1
+    xoa = 1 
     if(runauto==true) 
     {
         RunView_B()
@@ -168,10 +166,12 @@ document.addEventListener("mousedown",(e)=>
                 if(cell.classList.contains("light"))
                 {
                     cell.classList.remove("light")
+                    xoa= 0
                 }
                 else
                 {
                     cell.classList.add("light")
+                    them =0
                 }
             }
         }
